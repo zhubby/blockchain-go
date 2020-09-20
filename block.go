@@ -14,23 +14,30 @@ type Block struct {
 	Data            []byte
 	ParentBlockHash ChainHash
 	Hash            ChainHash
+	Nonce           int64
 }
 
 func NewGenesisBlock() *Block {
 	return NewBlock("Genesis Block", []byte{})
 }
 
+func (b *Block) conat() []byte {
+	timestamp := strconv.FormatInt(b.Timestamp.Unix(), 10)
+	return bytes.Join([][]byte{b.ParentBlockHash, b.Hash, []byte(timestamp)}, []byte{})
+}
+
 // set hash sha256(prevhash + data + timestamp)
 func (b *Block) SetHash() {
-	timestamp := strconv.FormatInt(b.Timestamp.Unix(), 10)
-	headers := bytes.Join([][]byte{b.ParentBlockHash, b.Hash, []byte(timestamp)}, []byte{})
-	h := sha256.Sum256(headers)
+	h := sha256.Sum256(b.conat())
 	b.Hash = h[:]
 }
 
 // create new block with data and prevhash
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now(), []byte(data), prevBlockHash, []byte{}}
-	block.SetHash()
+	block := &Block{time.Now(), []byte(data), prevBlockHash, []byte{}, 0}
+	pow := NewProofOfWork(block)
+	notice, hash := pow.Run()
+	block.Hash = hash[:]
+	block.Nonce = int64(notice)
 	return block
 }
