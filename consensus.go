@@ -57,12 +57,8 @@ func (p ProofOfWork) Run() (int, []byte) {
 
 func (p *ProofOfWork) Validate() bool {
 	var hashInt big.Int
-
 	data := p.prepareData(p.block.Nonce)
 	hash := sha256.Sum256(data)
 	hashInt.SetBytes(hash[:])
-
-	isValid := hashInt.Cmp(p.target) == -1
-
-	return isValid
+	return hashInt.Cmp(p.target) == -1
 }

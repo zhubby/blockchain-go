@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"strconv"
 
@@ -8,6 +9,8 @@ import (
 )
 
 func main() {
+	flag.Parse()
+
 	bc := blockchain.NewChain()
 
 	bc.AddBlock("Alice send 1 to Bob")
