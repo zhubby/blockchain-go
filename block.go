@@ -16,6 +16,7 @@ type Block struct {
 	ParentBlockHash ChainHash
 	Hash            ChainHash
 	Nonce           int64
+	Height          int
 }
 
 func (b *Block) Serialize() ([]byte, error) {
@@ -31,7 +32,7 @@ func (b *Block) Deserialize(bi []byte) error {
 }
 
 func NewGenesisBlock() *Block {
-	return NewBlock("Genesis Block", []byte{})
+	return NewBlock("Genesis Block", []byte{}, 0)
 }
 
 func (b *Block) conat() []byte {
@@ -46,8 +47,8 @@ func (b *Block) SetHash() {
 }
 
 // create new block with data and prevHash
-func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now(), []byte(data), prevBlockHash, []byte{}, 0}
+func NewBlock(data string, parentBlockHash []byte, height int) *Block {
+	block := &Block{time.Now(), []byte(data), parentBlockHash, []byte{}, 0, height}
 	pow := NewProofOfWork(block)
 	notice, hash := pow.Run()
 	block.Hash = hash[:]
